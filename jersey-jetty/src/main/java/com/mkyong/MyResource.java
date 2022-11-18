@@ -89,7 +89,7 @@ public class MyResource {
     public static String getUserPass(String user){
         try{
             PreparedStatement stm = connection.prepareStatement("""
-                    Select pass from users where name = ?
+                    Select pass from user where name = ?
                     """);
             stm.setString(1, user); // para ?
             ResultSet rs = stm.executeQuery();
