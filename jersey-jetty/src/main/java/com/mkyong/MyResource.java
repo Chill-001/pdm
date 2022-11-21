@@ -89,7 +89,7 @@ public class MyResource {
     public static String getUserPass(String user){
         try{
             PreparedStatement stm = connection.prepareStatement("""
-                    Select pass from user where name = ?
+                    Select password from user where username = ?
                     """);
             stm.setString(1, user); // para ?
             ResultSet rs = stm.executeQuery();
@@ -100,6 +100,4 @@ public class MyResource {
             throw new RuntimeException(e);
         }
     }
-
-    public static String get
 }

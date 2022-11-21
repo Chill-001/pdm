@@ -28,4 +28,4 @@ Create table uploads (
     Foreign Key (userID) references user(id)
 );
 
- insert in to movies
+ --insert in to movies
