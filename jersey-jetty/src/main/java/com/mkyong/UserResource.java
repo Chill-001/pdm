@@ -18,27 +18,86 @@ import static com.mkyong.BdResource.*;
 @Path("/user")
 public class UserResource {
 
+    @Path("/create")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
-    public Response create(String json) throws JsonProcessingException, SQLException {
+    public Response create(String json) {
 
         ObjectMapper mapper = new ObjectMapper();
-        Map<String, String> map = mapper.readValue(json, Map.class);
+        Map<String, String> map = null;
+        try {
+            map = mapper.readValue(json, Map.class);
+        } catch (JsonProcessingException e) {
+            System.out.println(e.getMessage());
+            throw new RuntimeException(e);
+        }
 
         String username = map.get("username");
-        String pass = map.get("pass");
+        String pass = map.get("password");
         String fullname = map.get("fullname");
 
         OpenDB();
 
-        PreparedStatement stm = connection.prepareStatement("""
-                    insert into user (username,password,fullname) values (?,?,?)
-                    """);
-        stm.setString(1, username); // para ?
-        stm.setString(2, pass); // para ?
-        stm.setString(3, fullname); // para ?
-        int rs = stm.executeUpdate();
+        PreparedStatement stm = null;
+        try {
+            stm = connection.prepareStatement("""
+                        insert into user (username,password,fullname) values (?,?,?)
+                        """);
+            stm.setString(1, username); // para ?
+            stm.setString(2, pass); // para ?
+            stm.setString(3, fullname); // para ?
+
+            int rs = stm.executeUpdate();
+
+            CloseDB();
+            if(rs > 0) return Response.status(200).entity("Conta criada").build();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            throw new RuntimeException(e);
+        }
+
+        return Response.status(401).entity("Erro na criação da conta").build();
+    }
+
+    @Path("/login")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response login(String json) {
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, String> map = null;
+        try {
+            map = mapper.readValue(json, Map.class);
+        } catch (JsonProcessingException e) {
+            System.out.println(e.getMessage());
+            throw new RuntimeException(e);
+        }
+
+        String username = map.get("username");
+        String pass = map.get("password");
+
+        OpenDB();
+
+        PreparedStatement stm = null;
+        try {
+            stm = connection.prepareStatement("""
+                        select id from user where (username = ? AND password = ?)
+                        """);
+
+            stm.setString(1, username); // para ?
+            stm.setString(2, pass); // para ?
+
+            ResultSet rs = stm.executeQuery();
+
+            if(!rs.next()) {
+                CloseDB();
+                return Response.status(401).entity("Password ou username errados").build();
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            throw new RuntimeException(e);
+        }
 
         try {
             CloseDB();
@@ -47,36 +106,58 @@ public class UserResource {
             throw new RuntimeException(e);
         }
 
-        if(rs > 0) return Response.status(200).entity("Conta criada").build();
-        return Response.status(401).entity("Erro na criação da conta").build();
+        return Response.status(200).entity("Login feito").build();
     }
 
-   /* @Path("/login")
-    @POST
+    @Path("/delete")
+    @DELETE
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
-    public Response login(String json) throws JsonProcessingException, SQLException {
+    public Response remove(String json) {
+
         ObjectMapper mapper = new ObjectMapper();
-        Map<String, String> map = mapper.readValue(json, Map.class);
+        Map<String, String> map = null;
+        try {
+            map = mapper.readValue(json, Map.class);
+        } catch (JsonProcessingException e) {
+            System.out.println(e.getMessage());
+            throw new RuntimeException(e);
+        }
 
         String username = map.get("username");
-        String pass = map.get("pass");
+        String pass = map.get("password");
+
+        System.out.println(username);
+        System.out.println(pass);
 
         OpenDB();
 
-        PreparedStatement stm = connection.prepareStatement("""
-                    select password from user where username = ?
-                    """);
+        PreparedStatement stm = null;
+        try {
+            stm = connection.prepareStatement("""
+                       delete from user where username = ?
+                        """);
 
-        stm.setString(1, username); // para ?
-        ResultSet rs = stm.executeQuery();
+            stm.setString(1, username); // para ?
 
-        CloseDB();
+            int rs = stm.executeUpdate();
 
-        if(!rs.next()) return Response.status(401).entity("Password ou username errados").build();
+            if(rs>0) {
+                CloseDB();
+                return Response.status(200).entity("Conta apagada").build();
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            throw new RuntimeException(e);
+        }
 
-        if(Objects.equals(pass, rs.getString(1)))
-            return Response.status(200).entity("Login feito").build();
+        try {
+            CloseDB();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            throw new RuntimeException(e);
+        }
+
         return Response.status(401).entity("Password ou username errados").build();
-    } */
+    }
 }
