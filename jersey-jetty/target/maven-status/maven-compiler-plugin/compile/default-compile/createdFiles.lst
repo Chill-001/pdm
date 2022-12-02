@@ -1,4 +1,7 @@
-com/mkyong/MyResource.class
 com/mkyong/Quickstart.class
 com/mkyong/MainApp.class
+com/mkyong/MovieResource.class
+com/mkyong/BdResource.class
+com/mkyong/UserResource.class
+com/mkyong/Movie.class
 com/mkyong/User.class

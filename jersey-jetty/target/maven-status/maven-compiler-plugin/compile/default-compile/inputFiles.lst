@@ -1,4 +1,7 @@
 /home/luna/3ºano/1ºsemestre/pdm/jax-rs/trabalho/jersey-jetty/src/main/java/com/mkyong/Quickstart.java
-/home/luna/3ºano/1ºsemestre/pdm/jax-rs/trabalho/jersey-jetty/src/main/java/com/mkyong/MyResource.java
+/home/luna/3ºano/1ºsemestre/pdm/jax-rs/trabalho/jersey-jetty/src/main/java/com/mkyong/BdResource.java
+/home/luna/3ºano/1ºsemestre/pdm/jax-rs/trabalho/jersey-jetty/src/main/java/com/mkyong/MovieResource.java
+/home/luna/3ºano/1ºsemestre/pdm/jax-rs/trabalho/jersey-jetty/src/main/java/com/mkyong/UserResource.java
 /home/luna/3ºano/1ºsemestre/pdm/jax-rs/trabalho/jersey-jetty/src/main/java/com/mkyong/MainApp.java
 /home/luna/3ºano/1ºsemestre/pdm/jax-rs/trabalho/jersey-jetty/src/main/java/com/mkyong/User.java
+/home/luna/3ºano/1ºsemestre/pdm/jax-rs/trabalho/jersey-jetty/src/main/java/com/mkyong/Movie.java

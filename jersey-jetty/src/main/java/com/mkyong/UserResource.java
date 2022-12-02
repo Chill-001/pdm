@@ -92,7 +92,7 @@ public class UserResource {
 
             if(!rs.next()) {
                 CloseDB();
-                return Response.status(401).entity("Password ou username errados").build();
+                return Response.status(401).entity("Password ou username errado").build();
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -132,8 +132,19 @@ public class UserResource {
 
         OpenDB();
 
+        PreparedStatement stm2 = null;
         PreparedStatement stm = null;
+
         try {
+            stm2 = connection.prepareStatement("""
+                       delete from movies where uploadedBy = ?
+                        """);
+
+            stm2.setString(1, username); // para ?
+
+            int rs1 = stm2.executeUpdate();
+            System.out.println(rs1);
+
             stm = connection.prepareStatement("""
                        delete from user where username = ?
                         """);
@@ -146,13 +157,6 @@ public class UserResource {
                 CloseDB();
                 return Response.status(200).entity("Conta apagada").build();
             }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            throw new RuntimeException(e);
-        }
-
-        try {
-            CloseDB();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             throw new RuntimeException(e);
