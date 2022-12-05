@@ -17,7 +17,7 @@ import static com.mkyong.BdResource.*;
 
 
 @Path("/movie")
-public class MovieResource {
+public class MovieResource extends Thread{
 
     @Path("/search/{movieName}")
     @GET
@@ -60,8 +60,22 @@ public class MovieResource {
 
         OpenDB();
 
+        PreparedStatement stm;
         PreparedStatement stm2 = null;
         try {
+            stm = connection.prepareStatement("""
+                       select name from movies where id = ?
+                        """);
+            stm.setInt(1,id);
+            ResultSet rs1 = stm.executeQuery();
+
+            if(!rs1.next()) {
+                CloseDB();
+                return Response.status(401).entity("filme não encontrado").build();
+            }
+
+            String name = rs1.getString(1) + "_" + id;
+
             stm2 = connection.prepareStatement("""
                        delete from movies where id = ?
                         """);
@@ -72,10 +86,8 @@ public class MovieResource {
             if(rs > 0) {
                 CloseDB();
 
-                File f = new File("/home/luna/3ºano/1ºsemestre/pdm/jax-rs/trabalho/jersey-jetty/src/resources/videos/teste.txt");
-                f.delete();
-
-                if(f.exists()) System.out.println("ficheiro apagado");
+                script(1, name);
+               // script(2, name);
 
                 return Response.status(200).entity("Filme apagado").build();
             }
@@ -83,6 +95,8 @@ public class MovieResource {
             CloseDB();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+            throw new RuntimeException(e);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
@@ -125,9 +139,9 @@ public class MovieResource {
 
             //int i = rs.getInt(1);
             //System.out.println(rs.getInt(1) );
-
+            //String name = moviename + "_" + rs.getInt(1) ;
             String pMovie = "/home/luna/3ºano/1ºsemestre/pdm/jax-rs/trabalho/jersey-jetty/src/resources/videos/high/"+ moviename + "_" + rs.getInt(1)  + ".txt";
-            String pPoster = moviename + "_" + rs.getInt(1) + ".txt";
+            String pPoster = "/home/luna/3ºano/1ºsemestre/pdm/jax-rs/trabalho/jersey-jetty/src/resources/imgs/" + moviename + "-poster"+ "_" + rs.getInt(1) + ".txt";
 
             stm = connection.prepareStatement("""
                     insert into movies 
@@ -153,6 +167,8 @@ public class MovieResource {
                 script(0, pMovie);
 
                 saveFile(poster, pPoster);
+                script(0, pPoster);
+
 
                 //File f = new File("/home/luna/3ºano/1ºsemestre/pdm/jax-rs/trabalho/jersey-jetty/src/resources/videos/teste.txt");
                 //if(f.exists()) System.out.println("ficheiro criado");
@@ -193,7 +209,14 @@ public class MovieResource {
 
     private void script(int n, String movie) throws IOException {
         //System.out.println(movie);
-        String[] shell = {"sh", "/home/luna/3ºano/1ºsemestre/pdm/jax-rs/trabalho/jersey-jetty/src/resources/scripts/uploadMovieBucket.sh", movie};
+        String[] shell;
+        if (n==0) {
+            shell = new String[]{"sh", "/home/luna/3ºano/1ºsemestre/pdm/jax-rs/trabalho/jersey-jetty/src/resources/scripts/uploadMovieBucket.sh", movie};
+        } else if(n == 1){
+           shell = new String[]{"sh", "/home/luna/3ºano/1ºsemestre/pdm/jax-rs/trabalho/jersey-jetty/src/resources/scripts/deleteMovieBucket.sh", movie};
+        } else {
+            shell = new String[]{"sh", "/home/luna/3ºano/1ºsemestre/pdm/jax-rs/trabalho/jersey-jetty/src/resources/scripts/deleteMovieBucket2.sh", movie};
+        }
         Process proc = Runtime.getRuntime().exec(shell);
         BufferedReader read = new BufferedReader(new InputStreamReader(
                 proc.getInputStream()));

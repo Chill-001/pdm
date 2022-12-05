@@ -17,6 +17,7 @@ Create table movies (
     director VARCHAR(80),
     totaltime time,
     genre VARCHAR(20),
+    --link para bucket
     uploadedBy  VARCHAR(80) NOT NULL,
     Foreign Key (uploadedBy) references user(username)
 );

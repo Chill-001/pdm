@@ -1,0 +1,1 @@
+ffmpeg -i input.mp4 -vf scale=-1:360 -c:v libx264 -crf 18 -preset veryslow -c:a copy output.mp4
