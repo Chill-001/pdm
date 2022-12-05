@@ -6,12 +6,13 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import java.sql.Connection;
+import java.io.File;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import static com.mkyong.BdResource.*;
 
@@ -134,16 +135,33 @@ public class UserResource {
 
         PreparedStatement stm2 = null;
         PreparedStatement stm = null;
+        PreparedStatement stm3 = null;
 
         try {
+            stm3 = connection.prepareStatement("""
+                       select id,name from movies where uploadedBy = ?
+                        """);
+
+            stm3.setString(1, username); // para ?
+            ResultSet rs1 = stm3.executeQuery();
+            List<Movie> movies = new ArrayList<Movie>();
+
+            while(rs1.next()) {
+                Movie m = new Movie();
+                m.setId(rs1.getInt(1));
+                m.setName(rs1.getString(2));
+                movies.add(m);
+            }
+
+            deleteFiles(movies);
+
             stm2 = connection.prepareStatement("""
                        delete from movies where uploadedBy = ?
                         """);
 
             stm2.setString(1, username); // para ?
-
-            int rs1 = stm2.executeUpdate();
-            System.out.println(rs1);
+            stm2.executeUpdate();
+            //System.out.println(rs2);
 
             stm = connection.prepareStatement("""
                        delete from user where username = ?
@@ -163,5 +181,21 @@ public class UserResource {
         }
 
         return Response.status(401).entity("Password ou username errados").build();
+    }
+
+    private void deleteFiles(List<Movie> movies) throws SQLException {
+        for(Movie i : movies) {
+            PreparedStatement stm = null;
+
+            File f = new File("/home/luna/3ºano/1ºsemestre/pdm/jax-rs/trabalho/jersey-jetty/src/resources/videos/teste.txt");
+            f.delete();
+
+            stm = connection.prepareStatement("""
+                       delete from movies where id = ?
+                        """);
+
+            stm.setInt(1, i.id); // para ?
+            stm.executeUpdate();
+        }
     }
 }

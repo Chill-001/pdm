@@ -10,14 +10,13 @@ Create table user(
 
 Create table movies (
     id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR (80) NOT NULL, -- tirar UNIQUE das bases de dados
-    --path VARCHAR (225) NOT NULL UNIQUE,
-    --poster VARCHAR (225) NOT NULL UNIQUE,
+    name VARCHAR (80) NOT NULL,
+    path VARCHAR (225) NOT NULL UNIQUE,
+    poster VARCHAR (225) NOT NULL UNIQUE,
     year INT,
     director VARCHAR(80),
-    --totaltime time NOT NULL,
+    totaltime time,
     genre VARCHAR(20),
-    publisher VARCHAR(80),
     uploadedBy  VARCHAR(80) NOT NULL,
     Foreign Key (uploadedBy) references user(username)
 );

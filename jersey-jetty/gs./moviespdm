@@ -1,0 +1,27 @@
+compilador:
+gcc version 9.4.0 (ubuntu 9.4.0-1ubuntu1~20.04)
+gcc version 10.3.0 (Ubuntu 10.3.0-1ubuntu1) 
+
+máquina:
+Ubuntu 21.04
+Ubuntu 20.04 LTS
+
+instrucões: 
+g++ -Wall nomeficheiro.cpp
+
+executar:
+./a.out < input.txt ou a partir do stdin
+
+input: 
+duas linhas de 16 números (0 a 15) separados por espaços
+
+output:
+tamanho de cada nó
+se é solvable ou não
+a estratégia de busca 
+a profundidade/custo
+memória gasta em bytes
+a configuração final em formato de matriz 4x4
+tempo de execução
+
+
